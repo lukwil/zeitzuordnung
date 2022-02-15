@@ -6,16 +6,39 @@ import (
 	"log"
 	"os"
 	"time"
+
+	"github.com/rickar/cal/v2"
+	"github.com/rickar/cal/v2/de"
+)
+
+const (
+	startTime      = "09:00"
+	endTime        = "18:00"
+	reducedEndTime = "17:00"
+	breakTime      = "01:00"
 )
 
 var records = [][]string{
 	{"Datum", "Start", "Ende", "Pause"},
 }
 
+var c = cal.NewBusinessCalendar()
+
 func main() {
+	c.AddHoliday(de.HolidaysBY...)
+	friedensfest := &cal.Holiday{
+		Name:  "Friedensfest",
+		Type:  cal.ObservancePublic,
+		Month: time.August,
+		Day:   8,
+		Func:  cal.CalcDayOfMonth,
+	}
+	c.AddHoliday(friedensfest)
+	c.AddHoliday(de.MariaHimmelfahrt)
+
 	timezone, _ := time.LoadLocation("Europe/Berlin")
 	today := time.Now().In(timezone)
-	bla, _ := time.Parse("02.01.2006", "04.02.2022")
+	bla, _ := time.Parse("02.01.2006", "08.08.2022")
 	today = bla.In(timezone)
 
 	year, week := today.ISOWeek()
@@ -41,26 +64,40 @@ func main() {
 }
 
 func generateDataForWeek(date time.Time) {
-	// going back from current day until monday
-	startTime := "09:00"
-	endTime := "18:00"
-	breakTime := "01:00"
-	for date.Weekday() != time.Monday {
-		appendEntry(date, startTime, endTime, breakTime)
-
-		date = date.AddDate(0, 0, -1)
+	// starting from current day until friday
+	for date.Weekday() != time.Saturday {
+		if holiday, _, _ := c.IsHoliday(date); !holiday {
+			hasReducedEndTime := false
+			if date.Weekday() == time.Friday {
+				// One hour less for friday --> 39h/week
+				hasReducedEndTime = true
+			}
+			appendRecord(date, hasReducedEndTime)
+		} else {
+			if date.Weekday() == time.Friday {
+				// When friday is a holiday, time can be reduced to seven hours on another day
+				reduceTimeOnDayBefore()
+			}
+		}
+		date = date.AddDate(0, 0, 1)
 	}
-
-	// One hour less for monday --> 39h/week
-	endTime = "17:00"
-	appendEntry(date, startTime, endTime, breakTime)
 }
 
-func appendEntry(date time.Time, startTime, endTime, breakTime string) {
-	records = append(records, []string{
+func appendRecord(date time.Time, hasReducedEndTime bool) {
+	r := []string{
 		date.Format("2006-01-02"),
 		startTime,
 		endTime,
 		breakTime,
-	})
+	}
+
+	if hasReducedEndTime {
+		r[2] = reducedEndTime
+	}
+	records = append(records, r)
+}
+
+func reduceTimeOnDayBefore() {
+	lastElement := records[len(records)-1]
+	lastElement[2] = reducedEndTime
 }
