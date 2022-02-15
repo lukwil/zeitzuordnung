@@ -12,11 +12,11 @@ jobs:
 
       - name: Run Go program
         uses: actions/setup-go@v2
-      - run: go run zeitzuordnung.go
+      - run: echo "TAG_NAME=$(go run zeitzuordnung.go)" >> $GITHUB_ENV
         
       - name: Release
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: ${{ env.DATE }}
+          tag_name: ${{ env.TAG_NAME }}
           files: |
             *.csv

@@ -35,6 +35,7 @@ func main() {
 			log.Fatalln("error writing record to file", err)
 		}
 	}
+	fmt.Printf("%v-KW%v", year, week)
 }
 
 func generateDataForWeek(date time.Time) {
@@ -43,7 +44,6 @@ func generateDataForWeek(date time.Time) {
 	endTime := "18:00"
 	breakTime := "01:00"
 	for date.Weekday() != time.Monday {
-		fmt.Println("Runter")
 		appendEntry(date, startTime, endTime, breakTime)
 
 		date = date.AddDate(0, 0, -1)
