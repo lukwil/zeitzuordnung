@@ -2,7 +2,7 @@ name: Run Zeitzuordnung and upload CSV asset
 on: 
   workflow_dispatch:
   schedule:
-    - cron: '0 8 * * 5'
+    - cron: '0 22 * * 1'
 jobs:
   build-and-publish-csv:
     runs-on: ubuntu-latest
