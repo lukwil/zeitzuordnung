@@ -1,4 +1,4 @@
-name: Build LaTeX document and create PDF
+name: Run Zeitzuordnung and upload CSV asset
 on: [push]
 jobs:
   build-and-publish-csv:
@@ -16,7 +16,6 @@ jobs:
         
       - name: Release
         uses: softprops/action-gh-release@v1
-        if: startsWith(github.ref, 'refs/tags/')
         with:
           files: |
             *.csv
