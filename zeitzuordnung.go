@@ -15,6 +15,8 @@ var records = [][]string{
 func main() {
 	timezone, _ := time.LoadLocation("Europe/Berlin")
 	today := time.Now().In(timezone)
+	bla, _ := time.Parse("02.01.2006", "04.02.2022")
+	today = bla.In(timezone)
 
 	year, week := today.ISOWeek()
 	fileName := fmt.Sprintf("zeitzuordnung-%v-KW%v.csv", year, week)
@@ -56,7 +58,7 @@ func generateDataForWeek(date time.Time) {
 
 func appendEntry(date time.Time, startTime, endTime, breakTime string) {
 	records = append(records, []string{
-		date.Format("02.01.2006"),
+		date.Format("2006-01-02"),
 		startTime,
 		endTime,
 		breakTime,
