@@ -38,8 +38,6 @@ func main() {
 
 	timezone, _ := time.LoadLocation("Europe/Berlin")
 	today := time.Now().In(timezone)
-	bla, _ := time.Parse("02.01.2006", "08.08.2022")
-	today = bla.In(timezone)
 
 	year, week := today.ISOWeek()
 	fileName := fmt.Sprintf("zeitzuordnung-%v-KW%v.csv", year, week)
