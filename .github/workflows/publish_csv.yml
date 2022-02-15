@@ -1,0 +1,22 @@
+name: Build LaTeX document and create PDF
+on: [push]
+jobs:
+  build-and-publish-csv:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get current date
+        run: echo "DATE=$(date +'%Y-%m-%d_%H-%M-%S')" >> $GITHUB_ENV
+
+      - name: Set up Git repository
+        uses: actions/checkout@v2
+
+      - name: Run Go program
+        uses: actions/setup-go@v2
+      - run: go run zeitzuordnung.go
+        
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          files: *.csv
+
